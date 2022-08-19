@@ -1,3 +1,5 @@
+import { getGitUser, getRepoInteractionLimitsAsync, getReposAsync } from "./utils/fetch";
+
 const Koa = require("koa");
 const BodyParser = require("koa-bodyparser");
 const Router = require('@koa/router');
@@ -19,16 +21,21 @@ app.use(cors());
 const router = new Router();
 
 router.get("/repos/:userName?", async (ctx: any, next: Function) => {
-    const url = `https://api.github.com/users/${ctx.params.userName}/repos`;
-    const promise = await axios.get(url);
-    const status = promise.status;
-    const repos = status === HttpStatus.OK ? promise.data : null
+    const userName = ctx.params.userName
+    try {
+        const { data: repos } = await getReposAsync(userName)
+        console.log(`repo.name: ${repos[0].name}`)
+        const { data: user } = await getGitUser(userName)
+        ctx.status = HttpStatus.OK;
+        ctx.body = { company: user.company, repos };
 
-    console.log(`==> 🌎  URL ${url}`);
-    ctx.status = status;
-    ctx.body = repos;
+        await next();
+    } catch {
+        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ctx.body = null;
 
-    await next();
+        await next();
+    }
 });
 
 app.use(router.routes()).use(router.allowedMethods());
