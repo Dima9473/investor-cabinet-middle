@@ -15,7 +15,7 @@ const app = new Koa();
 const PORT = process.env.PORT || 3000;
 
 app.use(BodyParser());
-app.use(Logger());
+// app.use(Logger());
 app.use(cors());
 
 const router = new Router();
@@ -24,7 +24,6 @@ router.get("/repos/:userName?", async (ctx: any, next: Function) => {
     const userName = ctx.params.userName
     try {
         const { data: repos } = await getReposAsync(userName)
-        console.log(`repo.name: ${repos[0].name}`)
         const { data: user } = await getGitUser(userName)
         ctx.status = HttpStatus.OK;
         ctx.body = { company: user.company, repos };
