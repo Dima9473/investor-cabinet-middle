@@ -1,14 +1,11 @@
-import { getGitUser, getReposAsync } from "./utils/fetch";
+import Koa from "koa";
+import Router from "@koa/router";
+import BodyParser from "koa-bodyparser";
+import Logger from "koa-logger";
+import Cors from "@koa/cors";
+import HttpStatus from 'http-status'
 
-const Koa = require("koa");
-const BodyParser = require("koa-bodyparser");
-const Router = require('@koa/router');
-const Logger = require("koa-logger");
-// const serve = require("koa-static");
-// const mount = require("koa-mount");
-const cors = require('@koa/cors');
-const axios = require('axios');
-const HttpStatus = require("http-status");
+import { getGitUser, getReposAsync } from "./utils/fetch";
 
 const app = new Koa();
 
@@ -16,11 +13,11 @@ const PORT = process.env.PORT || 3000;
 
 app.use(BodyParser());
 app.use(Logger());
-app.use(cors());
+app.use(Cors());
 
 const router = new Router();
 
-router.get("/repos/:userName?", async (ctx: any, next: Function) => {
+router.get("/repos/:userName?", async (ctx: Koa.Context, next: Function) => {
     const userName = ctx.params.userName
     try {
         const { data: repos } = await getReposAsync(userName)
