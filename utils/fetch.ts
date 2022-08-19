@@ -25,8 +25,3 @@ export const getGitUser = async (userName: string): Promise<RequestResultProps> 
 
     return { ...result }
 }
-
-export const getRepoInteractionLimitsAsync = async (userName: string, repo: string): Promise<RequestResultProps> => {
-    const result = await getDataAsync(`https://api.github.com/repos/${userName}/${repo}/interaction-limits`)
-    return { ...result }
-}

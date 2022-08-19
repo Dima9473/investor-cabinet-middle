@@ -1,4 +1,4 @@
-import { getGitUser, getRepoInteractionLimitsAsync, getReposAsync } from "./utils/fetch";
+import { getGitUser, getReposAsync } from "./utils/fetch";
 
 const Koa = require("koa");
 const BodyParser = require("koa-bodyparser");
