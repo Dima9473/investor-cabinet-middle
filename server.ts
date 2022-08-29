@@ -17,6 +17,10 @@ app.use(Cors());
 
 const router = new Router();
 
+type ProjectRequest = {
+    projectName: string
+}
+
 router.get("/repos/:userName?", async (ctx: Koa.Context, next: Function) => {
     const userName = ctx.params.userName
     try {
@@ -24,15 +28,28 @@ router.get("/repos/:userName?", async (ctx: Koa.Context, next: Function) => {
         const { data: user } = await getGitUser(userName)
         ctx.status = HttpStatus.OK;
         ctx.body = { company: user.company, repos };
-
-        await next();
     } catch {
         ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
         ctx.body = null;
-
+    } finally {
         await next();
     }
 });
+
+router.post('/project', async (ctx: Koa.Context, next: Function) => {
+    console.log('post here')
+    try {
+        const data = <ProjectRequest>ctx.request.body
+        console.log(`projectName: ${data.projectName}`)
+        ctx.body = { projectName: data.projectName }
+        ctx.status = HttpStatus.OK
+    } catch {
+        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ctx.body = null;
+    } finally {
+        await next()
+    }
+})
 
 app.use(router.routes()).use(router.allowedMethods());
 
