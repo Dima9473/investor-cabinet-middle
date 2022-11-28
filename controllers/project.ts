@@ -6,10 +6,8 @@ type ProjectRequest = {
 }
 
 export const addProject = async (ctx: Koa.Context, next: Function) => {
-    console.log('post here')
     try {
         const data = <ProjectRequest>ctx.request.body
-        console.log(`projectName: ${data.projectName}`)
         ctx.body = { projectName: data.projectName }
         ctx.status = HttpStatus.OK
     } catch {
