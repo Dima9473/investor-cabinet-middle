@@ -9,10 +9,9 @@ export const getUser = async (ctx: Koa.Context, next: Function) => {
     try {
         const userInfo = await getUserInfo(userName)
         ctx.body = userInfo;
-        ctx.status = HttpStatus.OK;
-    } catch {
-        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ctx.body = null;
+        ctx.response.status = HttpStatus.OK;
+    } catch (error: any) {
+        console.log(error.statusCode)
+        ctx.throw(error.status, error.message)
     }
 }
-
