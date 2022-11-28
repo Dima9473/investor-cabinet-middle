@@ -8,6 +8,16 @@ const app = new Koa();
 
 const PORT = process.env.PORT || 3000;
 
+// app.use(async (ctx, next) => {
+//     try {
+//         await next();
+//     } catch (err: any) {
+//         console.log()
+//         err.status = err.statusCode || err.status || 500;
+//         throw err;
+//     }
+// });
+
 app.use(BodyParser());
 app.use(Logger());
 app.use(Cors());
