@@ -63,7 +63,6 @@ app
         try {
             await next()
         } catch (err) {
-            console.log(err.status)
             ctx.status = err.status || 500;
             ctx.body = err.message;
         }

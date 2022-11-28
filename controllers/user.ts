@@ -11,7 +11,6 @@ export const getUser = async (ctx: Koa.Context, next: Function) => {
         ctx.body = userInfo;
         ctx.response.status = HttpStatus.OK;
     } catch (error: any) {
-        console.log(error.statusCode)
         ctx.throw(error.status, error.message)
     }
 }
