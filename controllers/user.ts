@@ -3,7 +3,7 @@ import HttpStatus from 'http-status'
 
 import { getUserInfo } from '../utils/services/UserInfo'
 
-export const getUser = async (ctx: Koa.Context, next: Function) => {
+export const getUser = async (ctx: Koa.Context) => {
     const userName = ctx.params.userName
 
     try {
