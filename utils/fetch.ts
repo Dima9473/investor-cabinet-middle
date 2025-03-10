@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
 import HttpStatus from 'http-status'
 
-type RequestResultProps = {
-    data: any,
+type RequestResultProps<T> = {
+    data: T,
     status: number
 }
 
@@ -24,7 +24,7 @@ const postAsync = async (url: string, dataBody: any = {}, config?: AxiosRequestC
     return { data, status }
 }
 
-export const getAccountsTBank = async (token: string): Promise<RequestResultProps> => { 
+export const getAccountsTBank = async <T>(token: string): Promise<RequestResultProps<T>> => { 
     const result = await postAsync("https://invest-public-api.tinkoff.ru/rest/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts", {headers: {
         'Authorization': `Bearer ${token}`,
         'accept': 'application/json',
