@@ -1,12 +1,13 @@
-import Koa from "koa";
+import { Context } from "koa";
 import HttpStatus from 'http-status'
 
-import { getAccountsInfo } from "../utils/services/Accounts";
 import { TOKEN } from "../lib/constants/auth";
+import { Bank } from "../utils/services/banks/bank";
 
-export const getAccounts = async (ctx: Koa.Context) => {
+export const getAccounts = async (ctx: Context) => {
     try {
-        const accountsInfo = await getAccountsInfo(TOKEN)
+        const bank: Bank = ctx.bank
+        const accountsInfo = await bank.getAccountsInfo(TOKEN)
         ctx.body = accountsInfo;
         ctx.response.status = HttpStatus.OK;
     } catch (error: any) {
