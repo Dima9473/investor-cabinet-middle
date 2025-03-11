@@ -20,11 +20,20 @@ export class Bank implements IBankServices {
         }
     }
 
-    async getAccountsInfo(token: string): Promise<unknown[]> {
+    getAccountsInfo(token: string): Promise<unknown[]> {
         if(!this.bank) {
             throw new Error("Банк не найден");
         }
 
         return this.bank.getAccountsInfo(token)
     }    
+
+    getOperationsInfo(token: string, body: unknown): Promise<unknown[]> {
+        if(!this.bank) {
+            throw new Error("Банк не найден");
+        }
+
+        return this.bank.getOperationsInfo(token, body)
+    }
+
 }
