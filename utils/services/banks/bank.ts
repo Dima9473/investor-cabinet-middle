@@ -1,7 +1,7 @@
 import { BANKS } from '../../../lib/constants/banks';
 import { IBankServices} from '../../../types/banks/bankServices'
 import { TBank } from './tBank/tBank';
-
+import { OperationsInfo } from '../../../types/banks/operationsInfo';
 export class Bank implements IBankServices {
     private bank: IBankServices | null;
 
@@ -28,7 +28,7 @@ export class Bank implements IBankServices {
         return this.bank.getAccountsInfo(token)
     }    
 
-    getOperationsInfo(token: string, body: unknown): Promise<unknown[]> {
+    getOperationsInfo(token: string, body: unknown): Promise<OperationsInfo> {
         if(!this.bank) {
             throw new Error("Банк не найден");
         }

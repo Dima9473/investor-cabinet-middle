@@ -4,7 +4,7 @@ import HttpStatus from 'http-status'
 import { TOKEN } from "../lib/constants/auth";
 import { Bank } from "../utils/services/banks/bank";
 
-type OperationsRequest = {
+export type OperationsRequest = {
    accountId: string,
    from?: string,
    to?: string,
