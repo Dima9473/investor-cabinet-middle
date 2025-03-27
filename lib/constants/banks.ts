@@ -1,3 +1,4 @@
 export enum BANKS {
-    't-bank' = 't-bank'
+    'tBank' = 't-bank',
+    'sber' = 'sber'
 }

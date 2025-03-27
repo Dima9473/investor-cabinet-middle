@@ -2,9 +2,9 @@ import { Context } from "koa";
 import HttpStatus from 'http-status'
 
 import { TOKEN } from "../lib/constants/auth";
-import { Bank } from "../utils/services/banks/bank";
+import { BanksService } from "../utils/services/banks/banksService";
 
-type OperationsRequest = {
+export type OperationsRequest = {
    accountId: string,
    from?: string,
    to?: string,
@@ -15,9 +15,9 @@ type OperationsRequest = {
 export const getOperations = async (ctx: Context) => {
     try {
         const account = <OperationsRequest>ctx.request.body
-        const bank: Bank = ctx.bank
+        const bank: BanksService = ctx.bank
 
-        const operationsInfo = await bank.getOperationsInfo(TOKEN, account)
+        const operationsInfo = await bank.getOperationsByAccountId(TOKEN, account)
         ctx.body = operationsInfo;
         ctx.response.status = HttpStatus.OK;
     } catch (error: any) {
