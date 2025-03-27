@@ -21,7 +21,6 @@ export default function apiRoutes(): Router {
 
     router.post('/accounts/:bankName?', useBank, getAccounts);
     router.post('/operations/:bankName?', useBank, getOperations);
-    // router.post('/accounts', getAccounts);
 
     return router
 }
