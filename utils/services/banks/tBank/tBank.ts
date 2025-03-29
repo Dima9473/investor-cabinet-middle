@@ -21,7 +21,7 @@ export class TBank implements IBank {
     
         console.log('body', JSON.parse(body as string).accountId)
         
-        const operationsInfo = adaptBankOperations(data, JSON.parse(body as string).accountId, BANKS.tBank);
+        const operationsInfo = adaptBankOperations(data, JSON.parse(body as string).accountId, BANKS.T_BANK);
 
         return operationsInfo
     }
