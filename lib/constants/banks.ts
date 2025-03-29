@@ -1,4 +1,7 @@
 export enum BANKS {
-    'tBank' = 't-bank',
-    'sber' = 'sber'
+    T_BANK = 't-bank',
+    SBER = 'sber',
+    VTB = 'vtb',
+    ALFA = 'alfa',
+    GAZPROM = 'gazprom',    
 }

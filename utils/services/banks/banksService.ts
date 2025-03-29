@@ -3,6 +3,7 @@ import { IBank} from '../../../types/banks/bank'
 import { TBank } from './tBank/tBank';
 import { OperationsInfo } from '../../../types/banks/operationsInfo';
 import { BANKS_TOKENS } from '../../../lib/constants/banksTokens';
+import { MockBank } from './bankMock';
 export class BanksService  {
     private bank: IBank | null;
 
@@ -14,7 +15,18 @@ export class BanksService  {
         switch (bank) {
             case 't-bank': {
                 return new TBank()
-
+            }
+            case 'sber': {
+                return new MockBank(bank)
+            }
+            case 'vtb': {
+                return new MockBank(bank)
+            }
+            case 'alfa': {
+                return new MockBank(bank)
+            }
+            case 'gazprom': {
+                return new MockBank(bank)
             }
 
             default: return null
