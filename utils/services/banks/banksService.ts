@@ -13,19 +13,19 @@ export class BanksService  {
 
     private getBank(bank: BANKS): IBank | null {
         switch (bank) {
-            case 't-bank': {
+            case BANKS.T_BANK: {
                 return new TBank()
             }
-            case 'sber': {
+            case BANKS.SBER: {
                 return new MockBank(bank)
             }
-            case 'vtb': {
+            case BANKS.VTB: {
                 return new MockBank(bank)
             }
-            case 'alfa': {
+            case BANKS.ALFA: {
                 return new MockBank(bank)
             }
-            case 'gazprom': {
+            case BANKS.GAZPROM: {
                 return new MockBank(bank)
             }
 
