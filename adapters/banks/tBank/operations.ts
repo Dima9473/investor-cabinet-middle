@@ -1,5 +1,6 @@
 import { OperationsInfo } from "../../../types/banks/operationsInfo";
-import { Operations, OperationsResponse } from "../../../types/banks/tBank/operations";
+import { Operations } from "../../../types/banks/tBank/operation";
+import { OperationsResponse } from "../../../types/banks/tBank/responses/operationsResponse";
 import { validateBankOperations } from "../../../validation/banks/tBank/operation";
 
 export const adaptBankOperations = (bankOperations: OperationsResponse | null, accountId: string, bankName: string): OperationsInfo | null => {
