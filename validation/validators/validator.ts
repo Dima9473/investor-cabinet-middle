@@ -1,7 +1,8 @@
 // models/validator.ts
 
 import { accountSchema } from '../../zodSchemas/account';
-import { operationSchema } from '../../zodSchemas/operation';
+import { operationSchema } from '../../zodSchemas/operations/operation';
+
 import { validate } from '../validate';
 
 export const validateAccount = validate(accountSchema);

@@ -1,4 +1,4 @@
-import { AccountsResponse } from "../../../types/banks/tBank/responses/accountsResponse"
+import { AccountsResponse } from "../../types/banks/tBank/responses/accountsResponse"
 
 export const validateBankAccounts = (data: AccountsResponse | null): data is AccountsResponse => {
     if (!data) {
