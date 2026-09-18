@@ -1,27 +1,32 @@
-
 import Router from "@koa/router";
+import { bodyParser } from "@koa/bodyparser";
 
-import { getAccounts } from "../controllers/accounts";
-import { useBank } from "../middlewares/useBank";
-import { getOperations } from "../controllers/operations";
-import { Context, Next } from "koa";
-import body from 'koa-body'
-import { validateAccount, validateOperation } from "../validation/validators/validator";
+import {
+    getAccounts,
+    getAnalytics,
+    getCandles,
+    getLastPrices,
+    getLegacyAccounts,
+    getLegacyOperations,
+    getOperations,
+    getPortfolio,
+} from "../controllers/readOnly";
 
 export default function apiRoutes(): Router {
     const router = new Router();
-    const bodyParser = body()
+    router.use(bodyParser({ enableTypes: ["json"], jsonLimit: "256kb" }));
+    router.get("/health", (ctx) => {
+        ctx.status = 200;
+        ctx.body = { status: "ok" };
+    });
+    router.post("/accounts/:bankName", getAccounts);
+    router.post("/portfolio/:bankName", getPortfolio);
+    router.post("/operations/:bankName", getOperations);
+    router.post("/analytics/:bankName", getAnalytics);
+    router.post("/market-data/:bankName/last-prices", getLastPrices);
+    router.post("/market-data/:bankName/candles", getCandles);
+    router.post("/legacy/accounts/:bankName", getLegacyAccounts);
+    router.post("/legacy/operations/:bankName", getLegacyOperations);
 
-    router.use((ctx: Context, next: Next) => {
-        if (typeof ctx.request.body !== 'undefined'){
-            return next()
-        }
-
-        return bodyParser(ctx, next)
-    })
-
-    router.post('/accounts/:bankName?', useBank, getAccounts, validateAccount);
-    router.post('/operations/:bankName?', useBank, getOperations, validateOperation);
-
-    return router
+    return router;
 }
