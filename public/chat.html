@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Инвестиционный чат</title>
+  <style>
+    :root {
+      font-family: system-ui, sans-serif;
+      color: #1a1a1a;
+      background: #f4f6f8;
+    }
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      padding: 1rem 1.25rem;
+      background: #0d47a1;
+      color: #fff;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      min-height: 320px;
+    }
+    .msg {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      max-width: 90%;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: #0d47a1;
+      color: #fff;
+    }
+    .msg.assistant {
+      align-self: flex-start;
+      background: #fff;
+      border: 1px solid #dde3ea;
+    }
+    .settings {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+    }
+    .settings label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    input, textarea, button {
+      font: inherit;
+    }
+    input, textarea {
+      padding: 0.5rem 0.65rem;
+      border: 1px solid #c5cdd8;
+      border-radius: 8px;
+    }
+    form {
+      display: flex;
+      gap: 0.5rem;
+    }
+    textarea {
+      flex: 1;
+      resize: vertical;
+      min-height: 2.5rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #0d47a1;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .hint {
+      font-size: 0.8rem;
+      color: #5c6570;
+      margin-top: 0.5rem;
+    }
+    .error {
+      color: #b71c1c;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="margin:0;font-size:1.25rem">Чат с ИИ · инвестиционный кабинет</h1>
+  </header>
+  <main>
+    <div class="settings">
+      <label>
+        URL API (ваш middleware)
+        <input id="apiBase" type="text" value="http://localhost:3000" />
+      </label>
+      <label>
+        <input id="usePortfolio" type="checkbox" />
+        Подмешать контекст портфеля (нужны accountId и банк)
+      </label>
+      <label>
+        ID счёта (не уходит в LLM — только на сервере)
+        <input id="accountId" type="text" placeholder="из POST /accounts/t-bank" />
+      </label>
+    </div>
+
+    <div id="messages" aria-live="polite"></div>
+    <p id="error" class="error" hidden></p>
+
+    <form id="chatForm">
+      <textarea id="input" rows="2" placeholder="Спросите про диверсификацию, риски…" required></textarea>
+      <button type="submit" id="sendBtn">Отправить</button>
+    </form>
+    <p class="hint">
+      Запросы идут только на ваш backend. GigaChat вызывается с сервера; ключи не попадают в браузер.
+    </p>
+  </main>
+
+  <script>
+    const messagesEl = document.getElementById('messages')
+    const form = document.getElementById('chatForm')
+    const input = document.getElementById('input')
+    const sendBtn = document.getElementById('sendBtn')
+    const errorEl = document.getElementById('error')
+    const apiBaseInput = document.getElementById('apiBase')
+    const usePortfolio = document.getElementById('usePortfolio')
+    const accountIdInput = document.getElementById('accountId')
+
+    /** История диалога для API */
+    const history = []
+
+    function appendMessage(role, content) {
+      const div = document.createElement('div')
+      div.className = 'msg ' + role
+      div.textContent = content
+      messagesEl.appendChild(div)
+      messagesEl.scrollTop = messagesEl.scrollHeight
+      return div
+    }
+
+    function showError(text) {
+      errorEl.hidden = !text
+      errorEl.textContent = text || ''
+    }
+
+    function buildBody() {
+      const body = { messages: history.map((m) => ({ role: m.role, content: m.content })) }
+
+      if (usePortfolio.checked && accountIdInput.value.trim()) {
+        body.portfolioContext = {
+          bankName: 't-bank',
+          accountId: accountIdInput.value.trim(),
+        }
+      }
+
+      return body
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const text = input.value.trim()
+      if (!text) return
+
+      showError('')
+      history.push({ role: 'user', content: text })
+      appendMessage('user', text)
+      input.value = ''
+      sendBtn.disabled = true
+
+      const assistantNode = appendMessage('assistant', '…')
+
+      try {
+        const apiBase = apiBaseInput.value.replace(/\/$/, '')
+        const response = await fetch(apiBase + '/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildBody()),
+        })
+
+        if (!response.ok) {
+          const errText = await response.text()
+          throw new Error(errText || 'HTTP ' + response.status)
+        }
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        let fullText = ''
+
+        assistantNode.textContent = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            const data = JSON.parse(line.slice(6))
+
+            if (data.error) throw new Error(data.error)
+            if (data.delta) {
+              fullText += data.delta
+              assistantNode.textContent = fullText
+              messagesEl.scrollTop = messagesEl.scrollHeight
+            }
+          }
+        }
+
+        history.push({ role: 'assistant', content: fullText })
+      } catch (err) {
+        assistantNode.remove()
+        history.pop()
+        showError(err.message || 'Ошибка чата')
+      } finally {
+        sendBtn.disabled = false
+        input.focus()
+      }
+    })
+  </script>
+</body>
+</html>

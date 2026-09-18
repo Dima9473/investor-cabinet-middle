@@ -1,8 +1,13 @@
 /node_modules
+/dist
 
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Локальные секреты (токены — не коммитить; шаблоны: secrets/*.example.ts)
+/secrets/auth.ts
+/secrets/gigachat.ts
 

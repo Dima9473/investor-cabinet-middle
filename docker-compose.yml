@@ -10,6 +10,9 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+      - APP_MODE=${APP_MODE}
+      - PORT=${PORT:-3000}
+      - TBANK_USE_SANDBOX=${TBANK_USE_SANDBOX:-false}
     env_file:
       - .env
-    restart: unless-stopped 
+    restart: unless-stopped
